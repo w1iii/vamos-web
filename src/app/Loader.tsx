@@ -40,7 +40,7 @@ export default function Loader() {
       <div className="loader-inner">
         <Image
           className="loader-logo"
-          src="/vamos-after-dark.png"
+          src="/red.png"
           alt="Vamos After Dark"
           width={1606}
           height={535}

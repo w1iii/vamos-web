@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
@@ -20,6 +21,7 @@ const prestigeInclusions = [
   "Access to curated complimentary food spread",
   "Dedicated VIP Service staff throughout the night",
   "Dedicated VIP Entry Gates — fast-track entry",
+  "2 Premium Bottles of Your Choice: 1L José Cuervo · 1L JW Black Label · 700mL Jägermeister · Bacardi Gold",
 ];
 
 function Countdown() {
@@ -84,7 +86,7 @@ export default function Home() {
       <header className="site-header">
         <div className="container header-inner">
           <a className="brand" href="#" aria-label="Vamos home">
-            <span className="live-dot" /> VAMOS
+            VAMOS
           </a>
           <nav className="main-nav">
             <a href="#vip-reserve">VIP Tables</a>
@@ -98,14 +100,20 @@ export default function Home() {
           <div className="hero-overlay" />
           <div className="container hero-content">
             <p className="eyebrow">VAMOS PRESENTS</p>
-            <h1>AFTER <em>DARK</em></h1>
-            <p className="hero-copy">
-              The doors to the dark side are officially open — secure your entry before the night takes over.
-              On October 31st, reveal your alter ego under the moonlight as we ascend into the shadows.
-            </p>
+            <Image
+              className="hero-logo"
+              src="/red.png"
+              alt="Vamos"
+              width={500}
+              height={500}
+              priority
+            />
             <Countdown />
-            <a className="button button-outline" href="#vip-reserve">VIP Tables &amp; Lounges <span>→</span></a>
           </div>
+          <a className="scroll-hint" href="#vip-reserve" aria-label="Scroll down to VIP tables">
+            <span>Scroll down</span>
+            <span className="scroll-hint-arrow" aria-hidden="true">↓</span>
+          </a>
         </section>
 
         <section className="section container vip-section" id="vip-reserve">
@@ -123,7 +131,8 @@ export default function Home() {
                 <div className="price">₱6,499 <small>/ TABLE PACKAGE</small></div>
                 <h4>TABLE INCLUSIONS</h4>
                 <CheckList items={eclipseInclusions} />
-                <div className="experience"><h5>THE ECLIPSE EXPERIENCE</h5><p>VIP ECLIPSE puts you right in the VIP Area with your own cocktail table, premium service assistance, complimentary eats, and fast-track entry.</p></div>
+                <h4> THE ECLIPSE EXPERIENCE </h4>
+                <p className="package-copy">VIP ECLIPSE puts you right in the VIP Area with your own cocktail table, premium service assistance, complimentary eats, and fast-track entry. </p> 
               </div>
               <Link className="button button-outline full" href="/order?package=eclipse">Reserve VIP Eclipse</Link>
             </article>
@@ -137,8 +146,10 @@ export default function Home() {
                 <div className="price">₱17,499 <small>/ TABLE PACKAGE</small></div>
                 <h4>TABLE INCLUSIONS</h4>
                 <CheckList items={prestigeInclusions} />
-                <div className="bottles"><span>2 Premium Bottles of Your Choice</span><small>1L José Cuervo · 1L JW Black Label · 700mL Jägermeister · Bacardi Gold</small></div>
-                <div className="experience highlighted"><h5>THE PRESTIGE EXPERIENCE</h5><p>The VIP Prestige offers a table with cushioned seating, complimentary food options, premium drinks, and dedicated VIP assistance. Settle in, skip the queues, and enjoy VAMOS in your own comfortable space.</p></div>
+                <h4> THE PRESTIGE EXPERIENCE </h4>
+                <p className="package-copy">
+                  The VIP Prestige offers a table with cushioned seating, complimentary food options, premium drinks, and dedicated VIP assistance. Settle in, skip the queues, and enjoy VAMOS in your own comfortable space.
+                </p> 
               </div>
               <Link className="button full" href="/order?package=prestige">Reserve VIP Prestige</Link>
             </article>
@@ -147,8 +158,32 @@ export default function Home() {
       </main>
 
       <footer className="site-footer">
-        <div className="container footer-inner">
-          <strong>VAMOS <em>AFTER DARK</em></strong>
+        <div className="container footer-grid">
+          <div className="footer-brand">
+            <Image src="/vamos-logo.png" alt="VAMOS" width={500} height={500} />
+            <p>Premium nightlife experiences, unforgettable tables, and nights worth remembering.</p>
+          </div>
+          <div className="footer-column">
+            <h2>Explore</h2>
+            <a href="#vip-reserve">VIP Tables</a>
+            <a href="#vip-reserve">Private Reserve</a>
+            <a href="/order?package=prestige">Reserve a Table</a>
+          </div>
+          <div className="footer-column">
+            <h2>Connect</h2>
+            <a href="mailto:vamosponsorhips@gmail.com">vamosponsorhips@gmail.com</a>
+            <div className="footer-socials" aria-label="Social media">
+              <a href="https://www.facebook.com/profile.php?id=61558155861009" target="_blank" rel="noreferrer">Facebook</a>
+              <a href="https://www.instagram.com/vamos.bcd/" target="_blank" rel="noreferrer">Instagram</a>
+            </div>
+          </div>
+          <div className="footer-column footer-cta">
+            <h2>Make it yours</h2>
+            <p>Secure your VIP experience before the night takes over.</p>
+            <a className="button button-small" href="mailto:vamosponsorhips@gmail.com?subject=VAMOS%20VIP%20Inquiry">Contact VAMOS <span>→</span></a>
+          </div>
+        </div>
+        <div className="container footer-bottom">
           <span>10.31.26</span>
           <small>© 2026 VAMOS. All rights reserved.</small>
         </div>
