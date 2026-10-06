@@ -30,6 +30,14 @@ const premiumBottleChoices = [
   "Bacardi Gold",
 ];
 
+const heroImages = [
+  "/header-1.jpg",
+  "/header-2.jpg",
+  "/header-3.jpg",
+  "/header-4.jpg",
+  "/header-5.jpg",
+];
+
 function Countdown() {
   const [time, setTime] = useState({ days: 5, hours: 22, minutes: 56, seconds: 0 });
 
@@ -76,6 +84,7 @@ function CheckList({ items }: { items: string[] }) {
 
 export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [heroImageIndex, setHeroImageIndex] = useState(0);
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
@@ -85,6 +94,19 @@ export default function Home() {
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    heroImages.forEach((image) => {
+      const preload = new window.Image();
+      preload.src = image;
+    });
+
+    const interval = window.setInterval(() => {
+      setHeroImageIndex((currentIndex) => (currentIndex + 1) % heroImages.length);
+    }, 5000);
+
+    return () => window.clearInterval(interval);
   }, []);
 
   return (
@@ -102,7 +124,18 @@ export default function Home() {
       </header>
 
       <main>
-        <section className={`hero${isScrolled ? " is-scrolled" : ""}`}>
+        <section
+          className={`hero${isScrolled ? " is-scrolled" : ""}`}
+        >
+          <div className="hero-slideshow" aria-hidden="true">
+            {heroImages.map((image, index) => (
+              <div
+                className={`hero-slide${index === heroImageIndex ? " active" : ""}`}
+                key={image}
+                style={{ backgroundImage: `url("${image}")` }}
+              />
+            ))}
+          </div>
           <div className="hero-overlay" />
           <div className="container hero-content">
             <p className="eyebrow">VAMOS PRESENTS</p>
