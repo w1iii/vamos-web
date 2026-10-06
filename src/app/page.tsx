@@ -26,7 +26,7 @@ function Countdown() {
   const [time, setTime] = useState({ days: 5, hours: 22, minutes: 56, seconds: 0 });
 
   useEffect(() => {
-    const target = new Date("2026-10-31T22:00:00").getTime();
+    const target = new Date("2026-10-31T21:00:00").getTime();
     const update = () => {
       const difference = Math.max(0, target - Date.now());
       setTime({
@@ -67,6 +67,18 @@ function CheckList({ items }: { items: string[] }) {
 }
 
 export default function Home() {
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+
+    const handleScroll = () => setIsScrolled(window.scrollY > 24);
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <div className="site-shell">
       <header className="site-header">
@@ -82,7 +94,7 @@ export default function Home() {
       </header>
 
       <main>
-        <section className="hero">
+        <section className={`hero${isScrolled ? " is-scrolled" : ""}`}>
           <div className="hero-overlay" />
           <div className="container hero-content">
             <p className="eyebrow">VAMOS PRESENTS</p>
@@ -98,7 +110,6 @@ export default function Home() {
 
         <section className="section container vip-section" id="vip-reserve">
           <div className="vip-intro">
-            <span className="pill"><i /> Exclusive Table Packages</span>
             <h2>VAMOS <em>PRIVATE RESERVE</em></h2>
             <p>Step into VAMOS Private Reserve—an elevated VIP experience designed for those who appreciate exclusivity, comfort, and the finer details. Enjoy premium selections, dedicated service, and your own reserved space as you experience VAMOS at its most distinguished.</p>
           </div>

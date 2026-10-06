@@ -37,8 +37,9 @@ button { font: inherit; cursor: pointer; }
 .button-small { padding: 13px 21px; font-size: 11px; }
 .button-outline { border: 1px solid #bd3441; background: #220b10a8; }
 .button-outline:hover { background: var(--red); }
-.hero { position: relative; min-height: 100svh; display: flex; align-items: center; padding: 130px 0 70px; background: linear-gradient(180deg, #0501026b, #050102cc 68%, var(--black)), url("/screen.png") center/cover; background-position: center center; background-size: cover; background-repeat: no-repeat; background-color: var(--black); }
-.hero-overlay { position: absolute; inset: 0; background: radial-gradient(ellipse at center, transparent 5%, #05010266 55%, #050102 100%); }
+.hero { position: relative; min-height: 100svh; display: flex; align-items: center; padding: 130px 0 70px; background: linear-gradient(180deg, #0501026b, #050102cc 68%, var(--black)), url("/screen.png") center/cover; background-attachment: fixed; background-position: center center; background-size: cover; background-repeat: no-repeat; background-color: var(--black); }
+.hero-overlay { position: absolute; inset: 0; background: radial-gradient(ellipse at center, transparent 5%, #05010266 55%, #050102 100%); transition: background .45s ease; }
+.hero.is-scrolled .hero-overlay { background: radial-gradient(ellipse at center, #05010226 5%, #050102b8 55%, #050102 100%); }
 .hero-content { position: relative; z-index: 1; text-align: center; }
 .eyebrow { margin: 0 0 10px; color: #f14250; font-family: var(--font-jetbrains-mono), monospace; font-size: 11px; font-weight: 800; letter-spacing: .3em; text-transform: uppercase; }
 h1, h2, h3, h4, h5 { font-family: var(--font-playfair), serif; }
