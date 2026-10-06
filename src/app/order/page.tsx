@@ -31,14 +31,30 @@ const packages = {
     label: "",
     price: 6499,
     capacity: "5 GUESTS INCLUDED",
-    details: ["Up to 5 Guests included", "1x Bacardi Gold (750mL)", "3x Artisanal Mixers & Ice Caddy", "Express VIP Lane Access"],
+    details: [
+      "VIP Access for 5 Guests",
+      "1 Cocktail Table (standing)",
+      "1 Bottle of Bacardi Gold",
+      "3 Mixers",
+      "Access to curated complimentary food spread",
+      "Dedicated VIP Service staff throughout the night",
+      "Dedicated VIP Entry Gates — fast-track entry",
+    ],
   },
   prestige: {
     name: "VIP PRESTIGE",
     label: "",
     price: 17499,
     capacity: "10 GUESTS INCLUDED",
-    details: ["10 Guests included (Plush Booth Seating)", "2x Premium Bottles (Choice of Liquor)", "Dedicated VIP Butler & Security Escort", "Priority RFID wristband issuance"],
+    details: [
+      "VIP Access for 10 guests",
+      "VIP Table with cushioned seating for your group",
+      "5 Mixers",
+      "Access to curated complimentary food spread",
+      "Dedicated VIP Service staff throughout the night",
+      "Dedicated VIP Entry Gates — fast-track entry",
+    ],
+    bottleChoices: ["1L José Cuervo", "1L JW Black Label", "700mL Jägermeister", "Bacardi Gold"],
   },
 } as const;
 
@@ -216,7 +232,20 @@ function OrderContent() {
                     <span className="tier-tag">{key === "prestige" ? "" : item.label}</span>
                     <h3>{item.name}</h3>
                     <div className="tier-price">{money(item.price)} </div>
-                    <div className="tier-details">{item.details.map((detail) => <span key={detail}><b>✦</b>{detail}</span>)}</div>
+                    <div className="tier-details">
+                      {item.details.map((detail) => <span key={detail}><b>✦</b>{detail}</span>)}
+                      {"bottleChoices" in item && (
+                        <span className="tier-bottle-details">
+                          <b>✦</b>
+                          <span>
+                            2 Premium Bottles of your choice
+                            <ul>
+                              {item.bottleChoices.map((bottle) => <li key={bottle}>{bottle}</li>)}
+                            </ul>
+                          </span>
+                        </span>
+                      )}
+                    </div>
                   </label>
                 ))}
               </div>
@@ -227,7 +256,7 @@ function OrderContent() {
               <div className="field-grid">
                 <label>Full name<input required name="name" placeholder="e.g. Mateo Joaquin Alvarez" /></label>
                 <label>Facebook / Messenger<input required name="email" placeholder="Your Facebook or Messenger name" /></label>
-                <label>Contact no.<input required name="phone" type="tel" placeholder="+63 917 888 1031" /></label>
+                <label>Contact no.<input required name="phone" type="tel" inputMode="tel" pattern="[+0-9 ()-]+" placeholder="+63 917 888 1031" /></label>
               </div>
             </section>
 

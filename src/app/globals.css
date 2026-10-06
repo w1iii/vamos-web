@@ -81,7 +81,9 @@ h2 { margin: 0; font-size: clamp(35px, 5vw, 58px); line-height: 1; letter-spacin
 .price small { color: #8f898a; font: bold 10px var(--font-inter), sans-serif; letter-spacing: .12em; }
 .package h4 { margin: 25px 0 16px; font: 900 11px var(--font-inter), sans-serif; letter-spacing: .16em; }
 .check-list { display: grid; gap: 12px; margin: 0 0 24px; padding: 0; list-style: none; color: #d0cbcc; font-size: 13px; line-height: 1.45; }
+.package.featured .check-list { margin-bottom: 12px; }
 .check-list li { display: flex; gap: 9px; }.check { flex: 0 0 auto; color: #FE0002; font-weight: bold; }
+.bottle-choices { display: grid; gap: 3px; margin: 5px 0 0; padding-left: 17px; color: #c1bbbc; font-size: 12px; line-height: 1.45; }.bottle-choices li { display: list-item; }.bottle-choices li::marker { color: #FE0002; }
 .experience, .bottles { margin: 25px 0; padding: 15px; border: 1px solid #FE0002; border-radius: 10px; background: #080405a8; }.experience.highlighted { background: #FE0002; border-color: #FE0002; }
 .experience h5 { margin: 0 0 8px; color: #FE0002; font: bold 10px var(--font-inter), sans-serif; letter-spacing: .15em; }.experience p, .bottles { margin: 0; color: #c1bbbc; font-size: 11px; line-height: 1.6; }
 .bottles span, .bottles small { display: block; }.bottles small { margin-top: 7px; color: #928b8d; font-family: var(--font-jetbrains-mono), monospace; }
@@ -114,6 +116,7 @@ h2 { margin: 0; font-size: clamp(35px, 5vw, 58px); line-height: 1; letter-spacin
 .tier-price small { color: #8c7d80; font: 500 9px var(--font-jetbrains-mono), monospace; }
 .tier-details { display: grid; gap: 10px; margin-top: 19px; padding-top: 16px; border-top: 1px solid #77505766; color: #bdb5b7; font-size: 12px; }
 .tier-details span { display: flex; gap: 8px; }.tier-details b { color: #FE0002; }
+.tier-bottle-details > span { display: block; }.tier-bottle-details ul { display: grid; gap: 3px; margin: 5px 0 0; padding-left: 18px; }.tier-bottle-details li { display: list-item; }.tier-bottle-details li::marker { color: #FE0002; }
 .field-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; padding-top: 20px; }
 .field-grid label { display: grid; gap: 7px; color: #cac1c3; font: 600 10px var(--font-jetbrains-mono), monospace; letter-spacing: .08em; text-transform: uppercase; }
 .field-grid .wide { grid-column: span 2; }

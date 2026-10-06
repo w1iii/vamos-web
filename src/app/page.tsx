@@ -21,7 +21,13 @@ const prestigeInclusions = [
   "Access to curated complimentary food spread",
   "Dedicated VIP Service staff throughout the night",
   "Dedicated VIP Entry Gates — fast-track entry",
-  "2 Premium Bottles of Your Choice: 1L José Cuervo · 1L JW Black Label · 700mL Jägermeister · Bacardi Gold",
+];
+
+const premiumBottleChoices = [
+  "1L José Cuervo",
+  "1L JW Black Label",
+  "700mL Jägermeister",
+  "Bacardi Gold",
 ];
 
 function Countdown() {
@@ -146,6 +152,17 @@ export default function Home() {
                 <div className="price">₱17,499 <small>/ TABLE PACKAGE</small></div>
                 <h4>TABLE INCLUSIONS</h4>
                 <CheckList items={prestigeInclusions} />
+                <ul className="check-list">
+                  <li>
+                    <span className="check">✓</span>
+                    <span>
+                      2 Premium Bottles of your choice
+                      <ul className="bottle-choices">
+                        {premiumBottleChoices.map((bottle) => <li key={bottle}>{bottle}</li>)}
+                      </ul>
+                    </span>
+                  </li>
+                </ul>
                 <h4> THE PRESTIGE EXPERIENCE </h4>
                 <p className="package-copy">
                   The VIP Prestige offers a table with cushioned seating, complimentary food options, premium drinks, and dedicated VIP assistance. Settle in, skip the queues, and enjoy VAMOS in your own comfortable space.
