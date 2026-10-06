@@ -2,9 +2,27 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { FormEvent, Suspense, useMemo, useState } from "react";
+import { FormEvent, Suspense, useEffect, useMemo, useState } from "react";
 
 type PackageKey = "eclipse" | "prestige";
+type Slot = { total: number; taken: number; left: number };
+type SlotMap = Record<PackageKey, Slot>;
+type ApiResponse = { ok: boolean; error?: string; slots?: SlotMap; left?: number };
+
+const endpoint = process.env.NEXT_PUBLIC_GOOGLE_SHEETS_WEB_APP_URL;
+
+async function fetchSlots(): Promise<SlotMap | null> {
+  if (!endpoint) return null;
+
+  try {
+    const response = await fetch(`${endpoint}?action=slots`, { cache: "no-store" });
+    const data = (await response.json()) as ApiResponse;
+    if (!response.ok || !data.ok || !data.slots) return null;
+    return data.slots;
+  } catch {
+    return null;
+  }
+}
 
 const packages = {
   eclipse: {
@@ -50,11 +68,95 @@ function Footer() {
 function OrderContent() {
   const searchParams = useSearchParams();
   const [selected, setSelected] = useState<PackageKey>(searchParams.get("package") === "eclipse" ? "eclipse" : "prestige");
+  const [slots, setSlots] = useState<SlotMap | null>(null);
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState("");
+  const [submitted, setSubmitted] = useState(false);
 
   const money = useMemo(() => (value: number) => `₱${value.toLocaleString("en-US", { minimumFractionDigits: 2 })}`, []);
 
-  function submitBooking(event: FormEvent<HTMLFormElement>) {
+  useEffect(() => {
+    let active = true;
+
+    async function loadSlots() {
+      const nextSlots = await fetchSlots();
+      if (active) setSlots(nextSlots);
+    }
+
+    void loadSlots();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  async function submitBooking(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (pending || submitted) return;
+
+    const form = event.currentTarget;
+    if (!form.reportValidity()) return;
+
+    if (!endpoint) {
+      setError("Reservations are temporarily unavailable. Please try again later.");
+      return;
+    }
+
+    const packageInfo = packages[selected];
+    const formData = new FormData(form);
+    setPending(true);
+    setError("");
+
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({
+          package: selected,
+          amount: packageInfo.price,
+          fullName: String(formData.get("name") || ""),
+          messenger: String(formData.get("email") || ""),
+          contactNumber: String(formData.get("phone") || ""),
+        }),
+      });
+      const data = (await response.json()) as ApiResponse;
+
+      if (!response.ok || !data.ok) {
+        if (data.error === "SOLD_OUT") {
+          setError("That package just sold out. Please choose another available tier.");
+          setSlots(await fetchSlots());
+        } else {
+          throw new Error("The reservation could not be submitted.");
+        }
+        return;
+      }
+
+      setSubmitted(true);
+      setSlots(await fetchSlots());
+    } catch (submissionError) {
+      setError(submissionError instanceof Error ? submissionError.message : "The reservation could not be submitted.");
+    } finally {
+      setPending(false);
+    }
+  }
+
+  if (submitted) {
+    return (
+      <div className="site-shell order-shell">
+        <Header />
+        <main className="order-main">
+          <div className="order-atmosphere" />
+          <div className="container order-content">
+            <section className="booking-success">
+              <span className="status-dot" />
+              <h1>RESERVATION <em>RECEIVED</em></h1>
+              <p>Your {packages[selected].name} request is reserved. We will contact you shortly to confirm the next steps.</p>
+              <Link className="button" href="/">Back to Event <span>→</span></Link>
+            </section>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
   }
 
   return (
@@ -74,8 +176,23 @@ function OrderContent() {
               <div className="order-card-heading"><span className="status-dot" /><h2>Select VIP Table Tier</h2></div>
               <div className="tier-grid">
                 {(Object.entries(packages) as [PackageKey, typeof packages.eclipse][]).map(([key, item]) => (
-                  <label className={`tier-card ${selected === key ? "selected" : ""}`} key={key}>
-                    <input type="radio" name="table-package" checked={selected === key} onChange={() => setSelected(key)} />
+                  <label
+                    className={`tier-card ${selected === key ? "selected" : ""} ${slots?.[key]?.left === 0 ? "sold-out" : ""}`}
+                    aria-disabled={slots?.[key]?.left === 0}
+                    key={key}
+                  >
+                    {slots?.[key] && (
+                      <span className={`slot-badge ${slots[key].left === 0 ? "sold-out" : ""}`}>
+                        {slots[key].left === 0 ? "SOLD OUT" : `${slots[key].left} / ${slots[key].total} SLOTS LEFT`}
+                      </span>
+                    )}
+                    <input
+                      type="radio"
+                      name="table-package"
+                      checked={selected === key}
+                      disabled={slots?.[key]?.left === 0}
+                      onChange={() => setSelected(key)}
+                    />
                     <span className="radio-mark">{selected === key ? "✓" : ""}</span>
                     <span className="tier-tag">{key === "prestige" ? "MOST POPULAR" : item.label}</span>
                     <h3>{item.name}</h3>
@@ -95,6 +212,10 @@ function OrderContent() {
               </div>
             </section>
 
+            {error && <p className="form-error" role="alert">{error}</p>}
+            <button className="button full" type="submit" disabled={pending}>
+              {pending ? "Reserving..." : "Reserve Table"} <span>→</span>
+            </button>
           </form>
           </div>
         </div>
