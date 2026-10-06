@@ -92,7 +92,7 @@ export default function Home() {
       <header className="site-header">
         <div className="container header-inner">
           <a className="brand" href="#" aria-label="Vamos home">
-            VAMOS
+            <Image className="brand-logo" src="/logo.png" alt="VAMOS" width={3281} height={593} priority />
           </a>
           <nav className="main-nav">
             <a href="#vip-reserve">VIP Tables</a>
@@ -177,7 +177,7 @@ export default function Home() {
       <footer className="site-footer">
         <div className="container footer-grid">
           <div className="footer-brand">
-            <Image src="/vamos-logo.png" alt="VAMOS" width={500} height={500} />
+            <Image src="/logo.png" alt="VAMOS" width={3281} height={593} />
             <p>Premium nightlife experiences, unforgettable tables, and nights worth remembering.</p>
           </div>
           <div className="footer-column">

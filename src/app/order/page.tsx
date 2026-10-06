@@ -62,7 +62,9 @@ function Header() {
   return (
     <header className="site-header">
       <div className="container header-inner">
-        <Link className="brand" href="/" aria-label="Vamos home">VAMOS</Link>
+        <Link className="brand" href="/" aria-label="Vamos home">
+          <Image className="brand-logo" src="/logo.png" alt="VAMOS" width={3281} height={593} priority />
+        </Link>
         <nav className="main-nav"><Link href="/#vip-reserve">VIP Tables</Link></nav>
         <Link className="button button-small" href="/#vip-reserve">Back to Event <span>→</span></Link>
       </div>
@@ -75,7 +77,7 @@ function Footer() {
     <footer className="site-footer">
       <div className="container footer-grid">
         <div className="footer-brand">
-          <Image src="/vamos-logo.png" alt="VAMOS" width={500} height={500} />
+          <Image src="/logo.png" alt="VAMOS" width={3281} height={593} />
           <p>Premium nightlife experiences, unforgettable tables, and nights worth remembering.</p>
         </div>
         <div className="footer-column">
@@ -234,13 +236,13 @@ function OrderContent() {
                     <div className="tier-price">{money(item.price)} </div>
                     <div className="tier-details">
                       {item.details.map((detail) => <span key={detail}><b>✦</b>{detail}</span>)}
-                      {"bottleChoices" in item && (
+                      {key === "prestige" && (
                         <span className="tier-bottle-details">
                           <b>✦</b>
                           <span>
                             2 Premium Bottles of your choice
                             <ul>
-                              {item.bottleChoices.map((bottle) => <li key={bottle}>{bottle}</li>)}
+                              {packages.prestige.bottleChoices.map((bottle) => <li key={bottle}>{bottle}</li>)}
                             </ul>
                           </span>
                         </span>
