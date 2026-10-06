@@ -39,6 +39,14 @@ const heroImages = [
   "/header-5.jpg",
 ];
 
+const mobileHeroImages = [
+  "/phone1.JPG",
+  "/phone2.JPG",
+  "/phone3.JPG",
+  "/phone4.JPG",
+  "/phone5.JPG",
+];
+
 function Countdown() {
   const [time, setTime] = useState({ days: 5, hours: 22, minutes: 56, seconds: 0 });
 
@@ -85,7 +93,9 @@ function CheckList({ items }: { items: string[] }) {
 
 export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const [heroImageIndex, setHeroImageIndex] = useState(0);
+  const activeHeroImages = isMobile ? mobileHeroImages : heroImages;
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
@@ -98,17 +108,29 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    heroImages.forEach((image) => {
+    const mediaQuery = window.matchMedia("(max-width: 760px)");
+    const updateViewport = () => {
+      setIsMobile(mediaQuery.matches);
+      setHeroImageIndex(0);
+    };
+
+    updateViewport();
+    mediaQuery.addEventListener("change", updateViewport);
+    return () => mediaQuery.removeEventListener("change", updateViewport);
+  }, []);
+
+  useEffect(() => {
+    activeHeroImages.forEach((image) => {
       const preload = new window.Image();
       preload.src = image;
     });
 
     const interval = window.setInterval(() => {
-      setHeroImageIndex((currentIndex) => (currentIndex + 1) % heroImages.length);
+      setHeroImageIndex((currentIndex) => (currentIndex + 1) % activeHeroImages.length);
     }, 5000);
 
     return () => window.clearInterval(interval);
-  }, []);
+  }, [activeHeroImages]);
 
   return (
     <div className="site-shell">
@@ -129,7 +151,7 @@ export default function Home() {
           className={`hero${isScrolled ? " is-scrolled" : ""}`}
         >
           <div className="hero-slideshow" aria-hidden="true">
-            {heroImages.map((image, index) => (
+            {activeHeroImages.map((image, index) => (
               <div
                 className={`hero-slide${index === heroImageIndex ? " active" : ""}`}
                 key={image}
