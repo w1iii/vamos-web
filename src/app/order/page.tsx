@@ -39,6 +39,7 @@ const packages = {
       "Access to curated complimentary food spread",
       "Dedicated VIP Service staff throughout the night",
       "Dedicated VIP Entry Gates — fast-track entry",
+      "Maximum of 1 additional guest per Eclipse table at ₱999",
     ],
   },
   prestige: {
