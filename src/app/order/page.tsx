@@ -50,63 +50,11 @@ function Footer() {
 function OrderContent() {
   const searchParams = useSearchParams();
   const [selected, setSelected] = useState<PackageKey>(searchParams.get("package") === "eclipse" ? "eclipse" : "prestige");
-  const currentPackage = packages[selected];
-  const total = currentPackage.price;
-  const [submitting, setSubmitting] = useState(false);
 
   const money = useMemo(() => (value: number) => `₱${value.toLocaleString("en-US", { minimumFractionDigits: 2 })}`, []);
 
   function submitBooking(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-  }
-
-  async function submitPayment() {
-    const endpoint = process.env.NEXT_PUBLIC_GOOGLE_SHEETS_WEB_APP_URL;
-    const form = document.getElementById("reservation-form") as HTMLFormElement | null;
-    const fileInput = document.getElementById("payment-screenshot") as HTMLInputElement | null;
-
-    if (!endpoint || !form || !form.reportValidity()) {
-      window.alert("Please complete the required lead booker information first.");
-      return;
-    }
-
-    const file = fileInput?.files?.[0];
-    if (!file) {
-      window.alert("Please attach your payment screenshot.");
-      return;
-    }
-
-    setSubmitting(true);
-    try {
-      const screenshot = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(String(reader.result).split(",")[1] ?? "");
-        reader.onerror = () => reject(new Error("Unable to read payment screenshot."));
-        reader.readAsDataURL(file);
-      });
-
-      const formData = new FormData(form);
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({
-          package: currentPackage.name,
-          amount: total,
-          fullName: formData.get("name"),
-          messenger: formData.get("email"),
-          contactNumber: formData.get("phone"),
-          screenshot: { name: file.name, type: file.type, data: screenshot },
-        }),
-      });
-
-      if (!response.ok) throw new Error("The reservation could not be submitted.");
-      window.alert("Payment submitted. Your reservation will be verified shortly.");
-      form.reset();
-    } catch (error) {
-      window.alert(error instanceof Error ? error.message : "The reservation could not be submitted.");
-    } finally {
-      setSubmitting(false);
-    }
   }
 
   return (
@@ -148,26 +96,6 @@ function OrderContent() {
             </section>
 
           </form>
-
-          <section className="order-card payment-card">
-            <div className="order-card-heading"><span className="status-dot" /><h2>Payment</h2></div>
-            <div className="qr-placeholder">
-              <span>QR</span>
-              <small>Scan to pay</small>
-            </div>
-            <label className="payment-upload">
-              <span>Attach payment screenshot</span>
-              <small>PNG, JPG, or WEBP · max 10MB</small>
-              <input id="payment-screenshot" name="paymentScreenshot" type="file" accept="image/png,image/jpeg,image/webp" />
-            </label>
-            <p className="payment-instruction">Scan the QR code to complete your reservation payment. Upload or submit your payment confirmation after sending.</p>
-            <div className="order-summary">
-              <span>{currentPackage.name}<small>{currentPackage.capacity}</small></span>
-              <b>{money(currentPackage.price)}</b>
-              <div className="summary-total"><span>Total amount</span><strong>{money(total)}</strong></div>
-            </div>
-            <button className="button submit-booking" type="button" disabled={submitting} onClick={submitPayment}>{submitting ? "Submitting..." : "Payment Submitted"} <span>→</span></button>
-          </section>
           </div>
         </div>
       </main>
