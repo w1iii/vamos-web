@@ -142,7 +142,6 @@ export default function Home() {
           <nav className="main-nav">
             <a href="#vip-reserve">VIP Tables</a>
           </nav>
-          <a className="button button-small" href="#vip-reserve">Get Passes <span>→</span></a>
         </div>
       </header>
 

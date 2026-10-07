@@ -66,8 +66,7 @@ function Header() {
         <Link className="brand" href="/" aria-label="Vamos home">
           <Image className="brand-logo" src="/logo.png" alt="VAMOS" width={3281} height={593} priority />
         </Link>
-        <nav className="main-nav"><Link href="/#vip-reserve">VIP Tables</Link></nav>
-        <Link className="button button-small" href="/#vip-reserve">Back to Event <span>→</span></Link>
+        <nav className="main-nav"><Link href="/">Home</Link></nav>
       </div>
     </header>
   );
