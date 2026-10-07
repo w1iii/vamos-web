@@ -3,27 +3,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
-import { FormEvent, Suspense, useEffect, useMemo, useState } from "react";
+import { FormEvent, Suspense, useMemo, useState } from "react";
 
 type PackageKey = "eclipse" | "prestige";
-type Slot = { total: number; taken: number; left: number };
-type SlotMap = Record<PackageKey, Slot>;
-type ApiResponse = { ok: boolean; error?: string; slots?: SlotMap; left?: number };
+type ApiResponse = { ok: boolean; error?: string };
 
 const endpoint = process.env.NEXT_PUBLIC_GOOGLE_SHEETS_WEB_APP_URL;
-
-async function fetchSlots(): Promise<SlotMap | null> {
-  if (!endpoint) return null;
-
-  try {
-    const response = await fetch(`${endpoint}?action=slots`, { cache: "no-store" });
-    const data = (await response.json()) as ApiResponse;
-    if (!response.ok || !data.ok || !data.slots) return null;
-    return data.slots;
-  } catch {
-    return null;
-  }
-}
 
 const packages = {
   eclipse: {
@@ -111,26 +96,11 @@ function Footer() {
 function OrderContent() {
   const searchParams = useSearchParams();
   const [selected, setSelected] = useState<PackageKey>(searchParams.get("package") === "eclipse" ? "eclipse" : "prestige");
-  const [slots, setSlots] = useState<SlotMap | null>(null);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
   const money = useMemo(() => (value: number) => `₱${value.toLocaleString("en-US", { minimumFractionDigits: 2 })}`, []);
-
-  useEffect(() => {
-    let active = true;
-
-    async function loadSlots() {
-      const nextSlots = await fetchSlots();
-      if (active) setSlots(nextSlots);
-    }
-
-    void loadSlots();
-    return () => {
-      active = false;
-    };
-  }, []);
 
   async function submitBooking(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -165,16 +135,13 @@ function OrderContent() {
 
       if (!response.ok || !data.ok) {
         if (data.error === "SOLD_OUT") {
-          setError("That package just sold out. Please choose another available tier.");
-          setSlots(await fetchSlots());
+          setError("Your reservation could not be submitted. Please try again.");
         } else {
           throw new Error("The reservation could not be submitted.");
         }
         return;
       }
-
       setSubmitted(true);
-      setSlots(await fetchSlots());
     } catch (submissionError) {
       setError(submissionError instanceof Error ? submissionError.message : "The reservation could not be submitted.");
     } finally {
@@ -190,9 +157,9 @@ function OrderContent() {
           <div className="order-atmosphere" />
           <div className="container order-content">
             <section className="booking-success">
-              <span className="status-dot" />
+              <span className="" />
               <h1>RESERVATION <em>RECEIVED</em></h1>
-              <p>Your {packages[selected].name} request is reserved. We will contact you shortly to confirm the next steps.</p>
+              <p>Your reservation request has been received, but please note that your booking is not yet confirmed. Kindly wait for a message from the VAMOS team confirming your reservation. Thank you!</p>
               <Link className="button" href="/">Back to Event <span>→</span></Link>
             </section>
           </div>
@@ -219,15 +186,13 @@ function OrderContent() {
               <div className="tier-grid">
                 {(Object.entries(packages) as [PackageKey, typeof packages.eclipse][]).map(([key, item]) => (
                   <label
-                    className={`tier-card ${selected === key ? "selected" : ""} ${slots?.[key]?.left === 0 ? "sold-out" : ""}`}
-                    aria-disabled={slots?.[key]?.left === 0}
+                    className={`tier-card ${selected === key ? "selected" : ""}`}
                     key={key}
                   >
                     <input
                       type="radio"
                       name="table-package"
                       checked={selected === key}
-                      disabled={slots?.[key]?.left === 0}
                       onChange={() => setSelected(key)}
                     />
                     <span className="radio-mark">{selected === key ? "✓" : ""}</span>

@@ -1,16 +1,8 @@
 const SHEET_NAME = "Reservations";
-const SLOT_LIMITS = { eclipse: 8, prestige: 4 };
+const PACKAGE_KEYS = { eclipse: true, prestige: true };
 
 function doGet(request) {
-  try {
-    if (request && request.parameter && request.parameter.action !== "slots") {
-      return jsonResponse({ ok: false, error: "UNKNOWN_ACTION" });
-    }
-
-    return jsonResponse({ ok: true, slots: getSlotSummary() });
-  } catch (error) {
-    return jsonResponse({ ok: false, error: error.message });
-  }
+  return jsonResponse({ ok: true });
 }
 
 function doPost(request) {
@@ -21,7 +13,7 @@ function doPost(request) {
     const payload = JSON.parse(request.postData.contents);
     const packageKey = String(payload.package || "").toLowerCase();
 
-    if (!SLOT_LIMITS[packageKey]) {
+    if (!PACKAGE_KEYS[packageKey]) {
       return jsonResponse({ ok: false, error: "INVALID_PACKAGE" });
     }
 
@@ -30,12 +22,6 @@ function doPost(request) {
     lockAcquired = true;
 
     const sheet = getReservationsSheet();
-    const taken = countReservations(sheet, packageKey);
-    const left = SLOT_LIMITS[packageKey] - taken;
-
-    if (left <= 0) {
-      return jsonResponse({ ok: false, error: "SOLD_OUT" });
-    }
 
     sheet.appendRow([
       new Date(),
@@ -47,7 +33,7 @@ function doPost(request) {
       "Reserved",
     ]);
 
-    return jsonResponse({ ok: true, left: left - 1 });
+    return jsonResponse({ ok: true });
   } catch (error) {
     return jsonResponse({ ok: false, error: error.message });
   } finally {
@@ -80,35 +66,6 @@ function getReservationsSheet() {
   }
 
   return sheet;
-}
-
-function getSlotSummary() {
-  const sheet = getReservationsSheet();
-
-  return Object.keys(SLOT_LIMITS).reduce(function (summary, packageKey) {
-    const taken = countReservations(sheet, packageKey);
-    summary[packageKey] = {
-      total: SLOT_LIMITS[packageKey],
-      taken: taken,
-      left: Math.max(0, SLOT_LIMITS[packageKey] - taken),
-    };
-    return summary;
-  }, {});
-}
-
-function countReservations(sheet, packageKey) {
-  const lastRow = sheet.getLastRow();
-
-  if (lastRow <= 1) {
-    return 0;
-  }
-
-  return sheet
-    .getRange(2, 2, lastRow - 1, 1)
-    .getValues()
-    .filter(function (row) {
-      return String(row[0]).toLowerCase() === packageKey;
-    }).length;
 }
 
 function jsonResponse(body) {
