@@ -30,7 +30,7 @@ function doPost(request) {
       payload.fullName,
       payload.messenger,
       payload.contactNumber,
-      "Reserved",
+      "Not Reviewed/New",
     ]);
 
     return jsonResponse({ ok: true });
