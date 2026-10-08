@@ -222,7 +222,7 @@ function OrderContent() {
               <div className="order-card-heading"><span className="status-dot" /><h2>INFORMATION</h2></div>
               <div className="field-grid">
                 <label>Full name<input required name="name" placeholder="e.g. Mateo Joaquin Alvarez" /></label>
-                <label>Facebook / Messenger<input required name="email" placeholder="Your Facebook or Messenger name" /></label>
+                <label>Facebook / Messenger<input required name="email" placeholder="https://www.facebook.com/[name]" /></label>
                 <label>Contact no.<input required name="phone" type="tel" inputMode="tel" pattern="[+0-9 ()-]+" placeholder="+63 917 888 1031" /></label>
               </div>
             </section>
