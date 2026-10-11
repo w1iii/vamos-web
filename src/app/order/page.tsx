@@ -8,8 +8,6 @@ import { FormEvent, Suspense, useMemo, useState } from "react";
 type PackageKey = "eclipse" | "prestige";
 type ApiResponse = { ok: boolean; error?: string };
 
-const endpoint = process.env.NEXT_PUBLIC_GOOGLE_SHEETS_WEB_APP_URL;
-
 const packages = {
   eclipse: {
     name: "VIP ECLIPSE",
@@ -109,20 +107,15 @@ function OrderContent() {
     const form = event.currentTarget;
     if (!form.reportValidity()) return;
 
-    if (!endpoint) {
-      setError("Reservations are temporarily unavailable. Please try again later.");
-      return;
-    }
-
     const packageInfo = packages[selected];
     const formData = new FormData(form);
     setPending(true);
     setError("");
 
     try {
-      const response = await fetch(endpoint, {
+      const response = await fetch("/api/reservations", {
         method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           package: selected,
           amount: packageInfo.price,

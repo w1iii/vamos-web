@@ -1,5 +1,21 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Reservations database
+
+Reservations are stored in Neon Postgres through the server-only `DATABASE_URL`
+environment variable. Run `db/schema.sql` in the Neon SQL Editor before starting
+the app. Do not use a `NEXT_PUBLIC_` variable for the database connection string.
+
+To migrate the existing Google Sheet, download the `Reservations` sheet as a CSV
+and run:
+
+```bash
+DATABASE_URL="postgresql://..." npm run import:reservations -- ./Reservations.csv
+```
+
+After verifying the imported rows in Neon, disable or delete the old Google Apps
+Script deployment so the sheet is no longer a public data store.
+
 ## Getting Started
 
 First, run the development server:
