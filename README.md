@@ -16,6 +16,29 @@ DATABASE_URL="postgresql://..." npm run import:reservations -- ./Reservations.cs
 After verifying the imported rows in Neon, disable or delete the old Google Apps
 Script deployment so the sheet is no longer a public data store.
 
+## Google Sheets sync (private)
+
+The Google Sheet is a read-only mirror kept in sync from Neon. After a
+reservation is inserted, the API route appends the same row to the sheet via the
+Google Sheets API using a service account. There is no public webhook endpoint,
+so the sheet stays private.
+
+Setup:
+
+1. In Google Cloud, create a project and enable the **Google Sheets API**.
+2. Create a **service account** and add a **JSON key**.
+3. Share the Google Sheet with the service account `client_email` as **Editor**.
+4. Store config in `.env.local` (and the deployment environment):
+
+   ```bash
+   # Base64-encode the whole service account JSON file
+   GOOGLE_SERVICE_ACCOUNT_B64="$(base64 -i service-account.json | tr -d '\n')"
+   SHEET_ID="<spreadsheet id from the sheet URL>"
+   ```
+
+The sync is best-effort: if the Sheets API call fails, the reservation is still
+saved in Neon and the error is logged. Never commit the service account JSON.
+
 ## Getting Started
 
 First, run the development server:

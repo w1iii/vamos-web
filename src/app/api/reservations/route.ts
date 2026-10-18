@@ -1,9 +1,13 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import {
   getDatabase,
   getPackageAmount,
   isPackageKey,
 } from "@/lib/reservations";
+import { appendReservationToSheet } from "@/lib/sheets";
+
+export const runtime = "nodejs";
+export const maxDuration = 30;
 
 type ReservationPayload = {
   package?: unknown;
@@ -46,7 +50,7 @@ export async function POST(request: Request) {
     const sql = getDatabase();
     const amount = getPackageAmount(packageKey);
 
-    await sql`
+    const inserted = (await sql`
       INSERT INTO reservations (
         package_key,
         amount,
@@ -63,7 +67,26 @@ export async function POST(request: Request) {
         ${contactNumber},
         'Not Reviewed/New'
       )
-    `;
+      RETURNING id, created_at
+    `) as { id: string; created_at: string | Date }[];
+
+    const row = inserted[0];
+    const createdAt = row?.created_at ? new Date(row.created_at) : new Date();
+
+    after(() =>
+      appendReservationToSheet({
+        id: row?.id ?? "",
+        createdAt,
+        packageKey,
+        amount,
+        fullName,
+        messenger,
+        contactNumber,
+        status: "Not Reviewed/New",
+      }).catch((error) => {
+        console.error("Failed to sync reservation to Google Sheets.", error);
+      }),
+    );
 
     return NextResponse.json({ ok: true });
   } catch (error) {
